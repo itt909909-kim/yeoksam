@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>중앙 등록 (Notion 연동) — 용인 역삼 영업조직</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --navy2:#27406b; --ink:#2b2b2b; --muted:#8A93A0;
+    --line:#e3e8ef; --tint:#f7f9fc; --gold:#9C7A30; --accent:#2E5AA0;
+    --good:#1f8a5b; --warn:#c0392b; --warnbg:#fdecea;
+    --a:#1f8a5b; --b:#b8860b; --c:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    background:#eef1f5;color:var(--ink);-webkit-font-smoothing:antialiased;padding:16px;}
+  .wrap{max-width:940px;margin:0 auto;}
+  .hidden{display:none!important;}
+
+  /* login */
+  .login{max-width:380px;margin:8vh auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;}
+  .login h1{font-size:20px;color:var(--navy);font-weight:800;margin-bottom:4px;}
+  .login .sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;}
+  .badge-conn{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-bottom:14px;font-weight:700;}
+  .badge-conn.on{background:#e6f4ec;color:var(--good);} .badge-conn.off{background:var(--warnbg);color:var(--warn);}
+
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--navy);margin:10px 0 5px;}
+  input,select,textarea{width:100%;font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;color:var(--ink);background:#fff;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  textarea{resize:vertical;min-height:46px;}
+  .btn{width:100%;margin-top:14px;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .btn:hover{background:var(--navy2);} .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.sec{background:#fff;color:var(--navy);border:1px solid var(--line);margin-top:8px;}
+  .err{color:var(--warn);font-size:12.5px;margin-top:10px;min-height:16px;}
+
+  /* app */
+  .topbar{display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .topbar .who{font-size:14px;font-weight:700;}
+  .topbar .who span{font-weight:400;color:#cdd6e4;font-size:12.5px;margin-left:8px;}
+  .topbar button{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .grid{display:grid;gap:14px;} @media(min-width:780px){.cols{grid-template-columns:1fr 1fr;}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+  .card h2{font-size:13px;letter-spacing:.04em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:12px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .dupwarn{display:none;margin-top:10px;background:var(--warnbg);border:1px solid #f5c6cb;color:var(--warn);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:600;}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;}
+  .pill.a{background:var(--a);} .pill.b{background:var(--b);} .pill.c{background:var(--c);}
+  .pv .pvrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+  .pv .k{color:var(--muted);} .pv .v{font-weight:700;color:var(--navy);}
+  .note{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+  .stat{background:var(--tint);border:1px solid var(--line);border-radius:9px;padding:10px;text-align:center;}
+  .stat .n{font-size:20px;font-weight:800;color:var(--navy);} .stat .l{font-size:11px;color:var(--muted);margin-top:2px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  th{color:var(--navy);background:var(--tint);font-weight:700;}
+  .tablewrap{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:9px;}
+  .badge{font-size:11px;padding:1px 7px;border-radius:5px;background:#eef3fb;color:var(--accent);font-weight:600;}
+  .badge.dup{background:var(--warnbg);color:var(--warn);}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+  .toolbar button{font-size:12.5px;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--navy);font-weight:600;cursor:pointer;font-family:inherit;}
+  .muted{color:var(--muted);font-size:12px;}
+  .cfgbar{font-size:11px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== LOGIN ===== -->
+  <div class="login" id="loginView">
+    <h1>중앙 등록 시스템</h1>
+    <div class="sub">용인 역삼 영업조직 · 본부별 로그인</div>
+    <div class="badge-conn off" id="connBadge">연동 상태 확인 중…</div>
+    <label>본부 선택</label>
+    <select id="lg_div">
+      <option value="총괄">총괄 (전체 관리)</option>
+      <option value="영업1본부">영업1본부</option>
+      <option value="영업2본부">영업2본부</option>
+      <option value="영업3본부">영업3본부</option>
+      <option value="직영본부">직영본부</option>
+    </select>
+    <label>접속 코드</label>
+    <input id="lg_pw" type="password" placeholder="본부 접속 코드" autocomplete="off">
+    <button class="btn" id="lg_btn">로그인</button>
+    <div class="err" id="lg_err"></div>
+    <div class="note">접속 코드는 본부별로 다릅니다(아래 CONFIG에서 설정). 총괄은 전 본부 등록 현황을 보고 본부를 지정해 등록할 수 있고, 각 본부는 자기 본부 등록만 가능합니다.</div>
+  </div>
+
+  <!-- ===== APP ===== -->
+  <div id="appView" class="hidden">
+    <div class="topbar">
+      <div class="who">중앙 등록 시스템 <span id="who_div"></span></div>
+      <div>
+        <button id="btn_reload">현황 새로고침</button>
+        <button id="btn_logout">로그아웃</button>
+      </div>
+    </div>
+
+    <div class="cfgbar" id="cfgbar"></div>
+
+    <div class="grid cols">
+      <!-- form -->
+      <div class="card">
+        <h2>신규 고객 등록</h2>
+        <label>고객명 *</label>
+        <input id="f_name" placeholder="예: 홍길동" autocomplete="off">
+        <label>연락처 * <span class="muted" id="phonehint"></span></label>
+        <input id="f_phone" placeholder="010-0000-0000" inputmode="numeric" autocomplete="off">
+        <div class="dupwarn" id="dupwarn"></div>
+
+        <div class="row2" id="divWrap">
+          <div>
+            <label>담당 본부 *</label>
+            <select id="f_div">
+              <option>영업1본부</option><option>영업2본부</option>
+              <option>영업3본부</option><option>직영본부</option>
+            </select>
+          </div>
+          <div>
+            <label>유입 채널</label>
+            <select id="f_chan">
+              <option>홈페이지</option><option>블로그</option><option>SNS·숏폼</option>
+              <option>메타광고</option><option>TM</option><option>DM</option>
+              <option>MGM-소개</option><option>부동산우군</option><option>설명회</option><option>기타</option>
+            </select>
+          </div>
+        </div>
+
+        <label>소개원 / 우군 (MGM·부동산 시)</label>
+        <input id="f_ref" placeholder="예: 기존 조합원 박○준" autocomplete="off">
+
+        <div class="row2">
+          <div><label>DB 등급</label>
+            <select id="f_grade"><option>A</option><option selected>B</option><option>C</option></select></div>
+          <div><label>자격여부</label>
+            <select id="f_qual"><option>적격</option><option selected>확인필요</option><option>부적격</option></select></div>
+        </div>
+        <div class="row2">
+          <div><label>유효기간(일)</label><input id="f_valid" type="number" value="30" min="1" max="120"></div>
+          <div><label>상태</label>
+            <select id="f_status"><option>미접촉</option><option>상담예약</option><option>방문상담</option><option>계약</option><option>탈락</option></select></div>
+        </div>
+        <label>특이사항</label>
+        <textarea id="f_note" placeholder="예: 84형 관심, 무주택 세대주"></textarea>
+
+        <button class="btn" id="submit">Notion에 등록 (우선권 부여)</button>
+        <button class="btn sec" id="clear">초기화</button>
+        <div class="err" id="reg_err"></div>
+        <div class="note">* 필수. 등록 즉시 Notion 고객 등록 DB에 기록되고 <b>등록 일시(우선권)·만료일·리드ID·중복여부</b>가 자동 부여됩니다.</div>
+      </div>
+
+      <!-- preview -->
+      <div class="card">
+        <h2>자동 계산 미리보기</h2>
+        <div class="pv">
+          <div class="pvrow"><span class="k">등록 일시 (우선권)</span><span class="v" id="pv_dt">—</span></div>
+          <div class="pvrow"><span class="k">담당 본부</span><span class="v" id="pv_div">—</span></div>
+          <div class="pvrow"><span class="k">DB 등급</span><span class="v" id="pv_grade">—</span></div>
+          <div class="pvrow"><span class="k">우선권 만료일</span><span class="v" id="pv_exp">—</span></div>
+          <div class="pvrow"><span class="k">중복 확인</span><span class="v" id="pv_dup">—</span></div>
+        </div>
+        <div class="note" id="lastres" style="min-height:18px;"></div>
+        <div class="note">리드ID·등록일시·만료일·중복여부는 서버(Notion)에서 자동 산출됩니다. 중복은 연락처 기준으로 서버가 권위 있게 판정합니다.</div>
+      </div>
+    </div>
+
+    <!-- registry -->
+    <div class="card" style="margin-top:14px;">
+      <h2 id="reg_title">등록 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="n" id="s_total">0</div><div class="l">표시 건수</div></div>
+        <div class="stat"><div class="n" id="s_dup">0</div><div class="l">중복 의심</div></div>
+        <div class="stat"><div class="n" id="s_contract">0</div><div class="l">계약</div></div>
+        <div class="stat"><div class="n" id="s_today">0</div><div class="l">오늘 등록</div></div>
+      </div>
+      <div class="toolbar">
+        <span class="muted" id="cnt">불러오는 중…</span>
+      </div>
+      <div class="tablewrap">
+        <table><thead><tr>
+          <th>리드ID</th><th>등록일시</th><th>고객명</th><th>연락처</th><th>채널</th><th>등급</th><th>상태</th><th>만료일</th><th>중복</th>
+        </tr></thead><tbody id="tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== CONFIG (배포 시 여기만 수정) ===================== */
+const CONFIG = {
+  // 프록시 Worker 주소 (배포 후 입력). 예: "https://yeoksam-proxy.your-name.workers.dev"
+  PROXY_BASE: "https://yeoksam.itt909909.workers.dev",
+  // 프록시와 공유하는 비밀문자열 (Worker의 APP_TOKEN과 동일하게)
+  APP_TOKEN: "yeoksam-2026-x8k3",
+  // 본부별 접속 코드 (원하는 값으로 변경)
+  PASSCODES: {
+    "총괄":     "admin2026",
+    "영업1본부": "team1-2026",
+    "영업2본부": "team2-2026",
+    "영업3본부": "team3-2026",
+    "직영본부":  "direct-2026",
+  },
+};
+/* ===================================================================== */
+
+(function(){
+  function $(id){return document.getElementById(id);}
+  function pad(n,w){n=''+n;while(n.length<w)n='0'+n;return n;}
+  function normPhone(p){return (p||'').replace(/[^0-9]/g,'');}
+  function fmtPhone(p){var d=normPhone(p);
+    if(d.length===11) return d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7);
+    if(d.length===10) return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
+    return p;}
+  function nowStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2)+' '+pad(d.getHours(),2)+':'+pad(d.getMinutes(),2);}
+  function addDaysISO(n){var d=new Date(Date.now()+n*86400000);return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2);}
+  function shortDT(iso){if(!iso)return '';var d=new Date(iso);if(isNaN(d))return iso.slice(0,16).replace('T',' ');return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2)+' '+pad(d.getHours(),2)+':'+pad(d.getMinutes(),2);}
+
+  var SESSION = { division:null, isAdmin:false };
+  var dupTimer=null;
+
+  // ---- proxy helpers ----
+  function configured(){ return CONFIG.PROXY_BASE && /^https?:\/\//.test(CONFIG.PROXY_BASE); }
+  async function api(path, opts={}){
+    if(!configured()) throw new Error('PROXY_BASE 미설정 — 배포 가이드를 참고해 CONFIG.PROXY_BASE를 입력하세요.');
+    var res = await fetch(CONFIG.PROXY_BASE.replace(/\/$/,'') + path, {
+      ...opts,
+      headers: { 'Content-Type':'application/json', 'X-App-Token': CONFIG.APP_TOKEN, ...(opts.headers||{}) },
+    });
+    var data = await res.json().catch(function(){return {ok:false,error:'invalid response'};});
+    if(!res.ok || data.ok===false) throw new Error(data.error || ('HTTP '+res.status));
+    return data;
+  }
+
+  // ---- connection badge ----
+  (function initBadge(){
+    var b=$('connBadge');
+    if(configured()){ b.className='badge-conn on'; b.textContent='● Notion 연동 설정됨'; }
+    else { b.className='badge-conn off'; b.textContent='● 미연동 — CONFIG.PROXY_BASE 입력 필요'; }
+  })();
+
+  // ---- login ----
+  $('lg_btn').addEventListener('click', login);
+  $('lg_pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+  function login(){
+    var div=$('lg_div').value, pw=$('lg_pw').value;
+    if((CONFIG.PASSCODES[div]||'__none__') !== pw){ $('lg_err').textContent='접속 코드가 올바르지 않습니다.'; return; }
+    SESSION.division = div;
+    SESSION.isAdmin = (div==='총괄');
+    $('lg_err').textContent='';
+    enterApp();
+  }
+  $('btn_logout').addEventListener('click', function(){
+    SESSION={division:null,isAdmin:false}; $('appView').classList.add('hidden'); $('loginView').classList.remove('hidden'); $('lg_pw').value='';
+  });
+
+  function enterApp(){
+    $('loginView').classList.add('hidden'); $('appView').classList.remove('hidden');
+    $('who_div').textContent = SESSION.isAdmin ? '· 총괄 (전체)' : '· '+SESSION.division;
+    // division field: admin chooses; team locked
+    if(SESSION.isAdmin){ $('divWrap').querySelector('#f_div').disabled=false; }
+    else {
+      var sel=$('f_div'); sel.value=SESSION.division; sel.disabled=true;
+    }
+    $('reg_title').textContent = SESSION.isAdmin ? '전체 등록 현황' : SESSION.division+' 등록 현황';
+    $('cfgbar').textContent = configured()
+      ? ('연동: '+CONFIG.PROXY_BASE)
+      : '⚠ 미연동 상태 — 등록/조회가 작동하지 않습니다. 배포 가이드대로 프록시를 배포하고 CONFIG.PROXY_BASE를 입력하세요.';
+    refreshPreview(); loadLeads();
+  }
+
+  // ---- preview + dup check ----
+  ['f_phone'].forEach(id=>$(id).addEventListener('input', function(){ refreshPreview(); scheduleDup(); }));
+  ['f_div','f_grade','f_valid'].forEach(id=>$(id).addEventListener('change', refreshPreview));
+  function refreshPreview(){
+    $('pv_dt').textContent = nowStr();
+    $('pv_div').textContent = SESSION.isAdmin ? $('f_div').value : SESSION.division;
+    var g=$('f_grade').value; $('pv_grade').innerHTML='<span class="pill '+g.toLowerCase()+'">'+g+'</span>';
+    $('pv_exp').textContent = addDaysISO(parseInt($('f_valid').value)||30);
+    $('phonehint').textContent = $('f_phone').value ? '→ '+fmtPhone($('f_phone').value) : '';
+  }
+  function scheduleDup(){ clearTimeout(dupTimer); dupTimer=setTimeout(checkDup, 500); }
+  async function checkDup(){
+    var phone=fmtPhone($('f_phone').value); var w=$('dupwarn');
+    if(normPhone(phone).length<9){ w.style.display='none'; $('pv_dup').innerHTML='—'; return; }
+    if(!configured()){ $('pv_dup').innerHTML='<span style="color:var(--muted)">미연동</span>'; return; }
+    try{
+      var d=await api('/api/check?phone='+encodeURIComponent(phone));
+      if(d.duplicate){
+        w.style.display='block';
+        w.innerHTML='⚠ 동일 연락처가 이미 등록됨 — <b>'+(d.existing.leadId||'기존 건')+' · '+(d.existing.name||'')+(d.existing.registeredAt?(' ('+shortDT(d.existing.registeredAt)+')'):'')+'</b>. 선등록 우선 원칙상 <b>중복의심</b>으로 표기됩니다.';
+        $('pv_dup').innerHTML='<span style="color:var(--warn)">중복의심</span>';
+      } else { w.style.display='none'; $('pv_dup').innerHTML='<span style="color:var(--good)">정상</span>'; }
+    }catch(e){ $('pv_dup').innerHTML='<span style="color:var(--muted)">확인 실패</span>'; }
+  }
+
+  // ---- register ----
+  $('submit').addEventListener('click', register);
+  $('f_phone').addEventListener('keydown', e=>{ if(e.key==='Enter') register(); });
+  async function register(){
+    $('reg_err').textContent='';
+    var name=$('f_name').value.trim();
+    var phone=fmtPhone($('f_phone').value.trim());
+    var division = SESSION.isAdmin ? $('f_div').value : SESSION.division;
+    if(!name){ $('reg_err').textContent='고객명을 입력하세요.'; return; }
+    if(normPhone(phone).length<9){ $('reg_err').textContent='연락처를 정확히 입력하세요.'; return; }
+    if(!configured()){ $('reg_err').textContent='미연동 상태입니다. CONFIG.PROXY_BASE를 설정하세요.'; return; }
+
+    var payload={ name, phone, division,
+      channel:$('f_chan').value, ref:$('f_ref').value.trim(),
+      grade:$('f_grade').value, qual:$('f_qual').value,
+      status:$('f_status').value, validDays:parseInt($('f_valid').value)||30,
+      note:$('f_note').value.trim() };
+
+    $('submit').disabled=true; $('submit').textContent='등록 중…';
+    try{
+      var d=await api('/api/register',{ method:'POST', body: JSON.stringify(payload) });
+      var msg = d.duplicate
+        ? '✔ 등록됨 '+d.leadId+' (⚠ 중복의심 — 선등록 우선 조정 대상) · 만료 '+d.expiry
+        : '✔ 등록됨 '+d.leadId+' · 우선권 '+shortDT(d.registeredAt)+' 부여 · 만료 '+d.expiry;
+      $('lastres').innerHTML='<span style="color:'+(d.duplicate?'var(--warn)':'var(--good)')+';font-weight:700">'+msg+'</span>';
+      ['f_name','f_phone','f_ref','f_note'].forEach(id=>$(id).value='');
+      $('f_status').value='미접촉'; $('dupwarn').style.display='none'; $('phonehint').textContent='';
+      refreshPreview(); loadLeads();
+    }catch(e){ $('reg_err').textContent='등록 실패: '+e.message; }
+    finally{ $('submit').disabled=false; $('submit').textContent='Notion에 등록 (우선권 부여)'; }
+  }
+  $('clear').addEventListener('click', function(){
+    ['f_name','f_phone','f_ref','f_note'].forEach(id=>$(id).value=''); $('dupwarn').style.display='none'; $('phonehint').textContent=''; refreshPreview();
+  });
+
+  // ---- load leads ----
+  $('btn_reload').addEventListener('click', loadLeads);
+  async function loadLeads(){
+    if(!configured()){ $('cnt').textContent='미연동 — 현황을 불러올 수 없습니다.'; return; }
+    $('cnt').textContent='불러오는 중…';
+    try{
+      var q = SESSION.isAdmin ? '' : ('?division='+encodeURIComponent(SESSION.division));
+      var d=await api('/api/leads'+q);
+      render(d.rows||[]);
+    }catch(e){ $('cnt').textContent='조회 실패: '+e.message; }
+  }
+  function render(rows){
+    var tb=$('tbody'); tb.innerHTML='';
+    var today=(new Date()).toISOString().slice(0,10);
+    var dup=0,ct=0,td=0;
+    rows.forEach(function(r){
+      if(r.dup && r.dup!=='정상') dup++;
+      if(r.status==='계약') ct++;
+      if((r.registeredAt||'').slice(0,10)===today) td++;
+      var g=(r.grade||'B').toLowerCase();
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+(r.leadId||'')+'</td><td>'+shortDT(r.registeredAt)+'</td><td>'+r.name+'</td>'+
+        '<td>'+r.phone+'</td><td>'+(r.channel||'')+'</td>'+
+        '<td><span class="pill '+g+'">'+(r.grade||'')+'</span></td>'+
+        '<td>'+(r.status||'')+'</td><td>'+(r.expiry||'')+'</td>'+
+        '<td>'+((r.dup&&r.dup!=='정상')?'<span class="badge dup">'+r.dup+'</span>':'<span class="badge">정상</span>')+'</td>';
+      tb.appendChild(tr);
+    });
+    $('s_total').textContent=rows.length; $('s_dup').textContent=dup; $('s_contract').textContent=ct; $('s_today').textContent=td;
+    $('cnt').textContent=rows.length+' 건';
+  }
+})();
+</script>
+</body>
+</html>
