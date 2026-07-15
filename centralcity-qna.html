@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>센트럴시티 상담 Q&A · 내부용</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  :root{
+    --deep:#0C9D4E;        /* 딥그린 */
+    --sig:#03C75A;         /* 시그니처 그린 */
+    --charcoal:#20242A;    /* 본문 차콜 */
+    --warn:#D93025;        /* 경고 레드 */
+    --paper:#F4F8F5;       /* 그린틴트 오프화이트 */
+    --line:#DDE7E1;        /* 헤어라인 */
+    --muted:#5C6B62;
+    --white:#FFFFFF;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(12,157,78,.06),0 6px 24px rgba(12,157,78,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    color:var(--charcoal);
+    background:var(--paper);
+    line-height:1.6;
+    letter-spacing:-0.01em;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 96px}
+
+  /* ---- Header ---- */
+  header{
+    background:linear-gradient(160deg,var(--deep) 0%,#0a8a44 100%);
+    color:var(--white);
+    padding:26px 0 22px;
+    border-bottom:3px solid var(--sig);
+  }
+  .head-inner{max-width:760px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 12px}
+  .brand{font-size:31px;font-weight:800;line-height:1;letter-spacing:-0.03em}
+  .brand small{display:block;font-size:13px;font-weight:500;opacity:.9;margin-top:7px;letter-spacing:0}
+  .badge-internal{
+    margin-left:auto;background:var(--warn);color:#fff;font-size:11.5px;font-weight:700;
+    padding:5px 10px;border-radius:999px;letter-spacing:0;white-space:nowrap;align-self:flex-start
+  }
+  .subline{max-width:760px;margin:12px auto 0;padding:0 16px;font-size:13px;color:rgba(255,255,255,.92)}
+
+  /* ---- Sticky controls ---- */
+  .controls{position:sticky;top:0;z-index:20;background:var(--paper);padding:14px 0 8px;border-bottom:1px solid var(--line)}
+  .search{position:relative}
+  .search input{
+    width:100%;font-size:15px;font-family:inherit;color:var(--charcoal);
+    padding:13px 16px 13px 44px;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .search input:focus{outline:none;border-color:var(--sig);box-shadow:0 0 0 3px rgba(3,199,90,.15)}
+  .search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted)}
+  .chips{display:flex;gap:7px;overflow-x:auto;padding:11px 2px 3px;-ms-overflow-style:none;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;
+    padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--muted);
+    transition:all .13s;white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--sig);color:var(--deep)}
+  .chip[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+  .chip.warn[aria-pressed="true"]{background:var(--warn);border-color:var(--warn)}
+  .chip.warn{color:var(--warn);border-color:#f3c6c2}
+
+  /* ---- Count ---- */
+  .count{font-size:12.5px;color:var(--muted);padding:14px 2px 6px}
+  .count b{color:var(--deep)}
+
+  /* ---- Q cards ---- */
+  .card{
+    background:#fff;border:1px solid var(--line);border-left:4px solid var(--sig);
+    border-radius:var(--radius);margin-bottom:11px;box-shadow:var(--shadow);overflow:hidden;
+  }
+  .q-btn{
+    width:100%;text-align:left;background:none;border:none;font-family:inherit;cursor:pointer;
+    display:flex;align-items:flex-start;gap:12px;padding:16px 18px;color:var(--charcoal);
+  }
+  .q-btn:focus-visible{outline:2px solid var(--sig);outline-offset:-2px}
+  .q-id{
+    flex:0 0 auto;font-size:12px;font-weight:800;color:var(--deep);background:rgba(3,199,90,.12);
+    border-radius:7px;padding:3px 8px;margin-top:1px;letter-spacing:0
+  }
+  .q-text{flex:1;font-size:15.5px;font-weight:600;line-height:1.45}
+  .q-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:0}
+  .tag.cat{background:#eef4f0;color:var(--deep)}
+  .tag.confirm{background:#fdeceb;color:var(--warn);border:1px solid #f6cfcb}
+  .tag.hasguard{background:#fff3e9;color:#b5540f}
+  .chev{flex:0 0 auto;width:20px;height:20px;stroke:var(--muted);transition:transform .2s;margin-top:2px}
+  .card[open] .chev{transform:rotate(180deg)}
+
+  .body{display:none;padding:0 18px 18px 18px}
+  .card[open] .body{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+
+  .answer{
+    background:rgba(3,199,90,.06);border:1px solid rgba(3,199,90,.18);border-radius:11px;
+    padding:14px 15px;font-size:14.5px;color:#243029
+  }
+  .answer .lead{font-weight:700;color:var(--deep);font-size:12px;letter-spacing:.02em;display:block;margin-bottom:6px}
+  .answer p{margin-top:8px}
+  .answer p:first-of-type{margin-top:0}
+
+  .guard{
+    margin-top:11px;background:#fdf3f2;border:1px solid #f4cdc9;border-left:4px solid var(--warn);
+    border-radius:11px;padding:12px 14px;font-size:13.5px;color:#7a231d
+  }
+  .guard .lead{font-weight:800;color:var(--warn);font-size:12px;display:block;margin-bottom:5px}
+
+  .refs{margin-top:10px;font-size:12px;color:var(--muted)}
+  .refs b{color:#3d4a42;font-weight:700}
+
+  /* ---- Special panels (금기 / 확인) ---- */
+  .panel{border-radius:var(--radius);padding:18px;margin-bottom:14px}
+  .panel h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .panel .sub{font-size:12.5px;margin-bottom:12px;opacity:.85}
+  .panel ul{list-style:none;display:grid;gap:8px}
+  .panel li{font-size:13.5px;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
+  .panel li::before{content:"";flex:0 0 auto;width:7px;height:7px;border-radius:50%;margin-top:8px}
+
+  .taboo{background:#fdf1f0;border:1.5px solid #f2c4bf}
+  .taboo h2{color:var(--warn)}
+  .taboo li::before{background:var(--warn)}
+
+  .pending{background:#fff;border:1.5px dashed #cdb; border-color:#d3ddd6}
+  .pending h2{color:var(--deep)}
+  .pending li::before{background:var(--sig)}
+  .pending code{background:#eef4f0;color:var(--deep);font-size:12px;padding:1px 6px;border-radius:5px;font-weight:700}
+
+  .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+  .empty svg{width:40px;height:40px;stroke:#c3d1c9;margin-bottom:12px}
+  .empty b{display:block;color:var(--charcoal);margin-bottom:4px;font-size:15px}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.6}
+  footer b{color:var(--warn)}
+
+  .hidden{display:none !important}
+
+  /* ---- 홍보관 안내 ---- */
+  .gallery{background:#fff;border:1px solid var(--line);border-top:3px solid var(--deep);border-radius:var(--radius);padding:16px 18px;margin:16px 0 2px;box-shadow:var(--shadow)}
+  .g-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--deep);margin-bottom:13px}
+  .g-head svg{width:18px;height:18px;stroke:var(--deep);fill:none}
+  .g-addr{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+  .g-label{flex:0 0 auto;font-size:11px;font-weight:700;color:#fff;background:var(--sig);padding:3px 9px;border-radius:6px;letter-spacing:0}
+  .g-value{font-size:15px;font-weight:700;color:var(--charcoal);flex:1;min-width:190px;line-height:1.4}
+  .g-copy{flex:0 0 auto;font-family:inherit;font-size:12px;font-weight:700;color:var(--deep);background:#eef4f0;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all .13s}
+  .g-copy:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+  .g-copy.done{background:var(--sig);color:#fff;border-color:var(--sig)}
+  .g-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .g-tel{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:#fff;background:var(--deep);text-decoration:none;padding:10px 17px;border-radius:11px;letter-spacing:.03em}
+  .g-tel svg{width:16px;height:16px;stroke:#fff;fill:none}
+  .g-hours{font-size:12.5px;color:var(--muted)}
+  .g-note{font-size:12.5px;color:#7a231d;background:#fdf3f2;border:1px solid #f4cdc9;border-radius:9px;padding:9px 12px;line-height:1.5}
+  .g-note b{color:var(--warn)}
+
+  @media (max-width:520px){
+    .brand{font-size:26px}
+    .q-text{font-size:14.5px}
+    .badge-internal{margin-left:0;order:3;width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="brand">센트럴시티<small>(용인역삼지역주택조합) · 상담 Q&amp;A</small></div>
+    <span class="badge-internal">내부용 · 대외비</span>
+  </div>
+  <div class="subline">상담사 컴플라이언스 레퍼런스 — 확정 사실만, 단정 금지. 답변과 함께 <b style="color:#ffd9d5">주의(금기)</b>를 반드시 확인하세요.</div>
+</header>
+
+<div class="wrap">
+
+  <section class="gallery" aria-label="홍보관 상담 안내">
+    <div class="g-head">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 0114 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      홍보관 · 상담 안내
+    </div>
+    <div class="g-addr">
+      <span class="g-label">주소</span>
+      <span class="g-value" id="galleryAddr">용인특례시 처인구 중부대로 1188번길 5 (삼가동)</span>
+      <button class="g-copy" id="copyAddr" type="button">복사</button>
+    </div>
+    <div class="g-row">
+      <a class="g-tel" href="tel:1588-3834">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8 9.6a16 16 0 006 6l1.1-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"/></svg>
+        1588-3834
+      </a>
+      <span class="g-hours">평일 10:00–18:00 · 내방 상담 사전 예약 권장</span>
+    </div>
+    <div class="g-note">⚠ 홍보관은 <b>삼가동</b>, 현장(사업부지)은 <b>역북동 R1-3블록</b>으로 위치가 다릅니다. 고객이 홍보관을 현장으로 오해하지 않도록 안내하세요.</div>
+  </section>
+
+  <div class="controls">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="q" type="search" placeholder="질문 검색 (예: 부담금, 철회, 전매, 동호수…)" autocomplete="off" aria-label="질문 검색">
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="분류 필터">
+      <button class="chip" data-cat="ALL" aria-pressed="true">전체</button>
+      <button class="chip" data-cat="A" aria-pressed="false">A 사업 기본</button>
+      <button class="chip" data-cat="B" aria-pressed="false">B 부담금·비용</button>
+      <button class="chip" data-cat="C" aria-pressed="false">C 철회·탈퇴·환불</button>
+      <button class="chip" data-cat="D" aria-pressed="false">D 동호수·시공</button>
+      <button class="chip" data-cat="E" aria-pressed="false">E 전매·입주</button>
+      <button class="chip warn" data-cat="WARN" aria-pressed="false">⚠ 주의·확인항목</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div id="list"></div>
+
+  <div class="empty hidden" id="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+    <b>검색 결과가 없습니다</b>
+    다른 키워드로 검색하거나 분류 필터를 초기화하세요.
+  </div>
+
+  <!-- 상담 금기 -->
+  <section class="panel taboo" id="taboo">
+    <h2>⚠ 상담 금기 — 하지 말 것</h2>
+    <div class="sub">위반 시 기망 취소 · 유사수신 · 과장광고 리스크 → 을(나눔플랜) 민·형사 책임 귀속</div>
+    <ul>
+      <li>"추가부담금 전혀 없음" 단정 (별도비용 있음)</li>
+      <li>"30일 무조건 철회·전액환불" 단정 <b>및</b> "철회 절대 불가" 단정 — 둘 다 금지</li>
+      <li>"확정 동·호수 / 확정 입주 / 몇 년 몇 월 입주" 단정</li>
+      <li>전매·프리미엄·시세차익·투자수익 소구</li>
+      <li>반도체 클러스터 직접수혜·거리 이점 과장</li>
+      <li>상황판·충원 세대수·모집률 외부 노출</li>
+    </ul>
+  </section>
+
+  <!-- 확인 대기 -->
+  <section class="panel pending" id="pending">
+    <h2>★ 확정 후 문구 굳힐 항목</h2>
+    <div class="sub">아래는 미확정 — 관할청·법률 확인 전까지 해당 Q는 중립 안내로만 응대</div>
+    <ul>
+      <li><b>최초 조합원 모집신고일</b> (관할 처인구청) → 2020.12.11 이전 확정 시 <code>Q8</code> "법정 30일 철회권 미적용" 명확화</li>
+      <li>충원 <b>가입비 예치기관</b> 운영 여부 (자금관리 신탁과 별개)</li>
+      <li>자격 판단 기준일 (설립인가 신청일 vs 가입신청일) 현행 시행령 확인 → <code>Q3</code></li>
+      <li>상속주택 처분기간 3개월(주택공급규칙) vs 교육자료 6개월 불일치</li>
+      <li>업무대행비 1,320만원의 오륜(병)/Y&amp;M(709 을) 정산 관계</li>
+    </ul>
+  </section>
+
+  <footer>
+    본 자료는 <b>내부용·대외비</b> 상담 참고자료이며, 조합 가입계약서·규약·각서 조항에 근거합니다. 확정 전 항목(★)은 최종 배포 전 컴플라이언스 검수가 필요합니다. 모든 광고·상담 문안은 사전 승인 절차를 따릅니다.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  {id:"Q1",cat:"A",catL:"사업 기본",q:"일반 분양인가요?",
+   a:["센트럴시티(용인역삼지역주택조합)는 <b>지역주택조합</b> 사업으로, 조합원이 되어 주택을 공급받는 방식입니다.","사업계획·설계·일정은 인·허가와 총회 의결에 따라 변경될 수 있습니다."]},
+  {id:"Q2",cat:"A",catL:"사업 기본",q:"위치·규모는요?",
+   a:["용인특례시 처인구 역북동 R1-3블록, 총 1,042세대 규모로 계획된 사업입니다.","사업계획승인(용인시 고시 제2021-323호, 2021.06.10)을 받은 현장입니다. 세부 세대·설계는 인·허가 과정에서 변경될 수 있습니다."]},
+  {id:"Q3",cat:"A",catL:"사업 기본",q:"가입 자격은요?",confirm:true,
+   a:["규약 제8조 기준 ①무주택 또는 전용 85㎡ 이하 1주택 세대주, ②서울·인천·경기 6개월 이상 거주, ③주택조합 결격사유 없음입니다."],
+   refs:"규약 제8조",
+   guard:"자격 판단 기준일(설립인가 신청일 vs 가입신청일)은 현행 시행령 확인 후 안내."},
+  {id:"Q4",cat:"B",catL:"부담금·비용",q:"부담금은 확정인가요?",
+   a:["가입계약서상 부담금표는 <b>확정부담금</b>으로 기재돼 있습니다.","다만 발코니 확장공사비, 개별 소유권등기비, 개발부담금, 사업소득세, 추가파일공사비, 제세공과금 등은 부담금에 포함되지 않아 <b>별도</b>입니다."],
+   refs:"가입계약서 제15조2 · 각서 12",
+   guard:'"추가로 드는 돈이 전혀 없다"는 안내 금지 — 별도비용 있음.'},
+  {id:"Q5",cat:"B",catL:"부담금·비용",q:"업무대행비가 따로 있나요?",
+   a:["부담금 안에 업무대행비 1,320만원(부가세 포함)이 포함돼 있으며, 계약금 1·2·3차에 각각 500만·600만·220만원으로 나뉘어 청구됩니다.","이 금액은 별도 자금관리로 업무대행 목적에만 집행됩니다."],
+   refs:"가입계약서 제4조3 · 부담금표 각주"},
+  {id:"Q6",cat:"B",catL:"부담금·비용",q:"납부 구조는요?",
+   a:["계약금 30%(1·2·3차) / 중도금 60%(1~5차) / 잔금 10%(입주지정일) 구조이며 층별로 금액이 다릅니다.","납부 일정은 인·허가·금융기관 대출여건에 따라 조정될 수 있습니다."]},
+  {id:"Q7",cat:"B",catL:"부담금·비용",q:"돈은 어디로 내나요?",
+   a:["부담금은 조합이 지정한 자금관리 신탁사(한국자산신탁) 명의 계좌로 조합원 개별 입금하며, 그 외 계좌 입금은 부담금으로 인정되지 않습니다.","자금은 신탁·대리사무계약에 따라 관리됩니다."],
+   refs:"가입계약서 제9조",
+   guard:"자금 집행 후 환불이 제한된다는 점(자금관리 동의서 명시)을 반드시 함께 설명."},
+  {id:"Q8",cat:"C",catL:"철회·탈퇴·환불",q:"가입 후 마음이 바뀌면 30일 내 철회되나요?",confirm:true,
+   a:["<b>단정하지 마세요.</b> 주택법 제11조의6의 30일 청약철회권은 조합의 <b>최초 조합원 모집신고일이 2020.12.11 이후</b>인 경우에 적용됩니다.","본 사업은 <b>결원충원</b>으로 새 모집신고를 수반하지 않아 <b>2017년 설립 당시의 최초 모집신고가 기준</b>이며, 그 시점이 2020.12.11 이전이면 법정 30일 철회권은 원칙적으로 적용되지 않습니다.","반대로 '철회 절대 불가'도 단정 금지입니다(민법상 사기·착오 취소, 조합 자율 철회 여지)."],
+   refs:"주택법 제11조의6 · 시행령 제22조1항2호",
+   guard:'표준 안내로만: "청약철회·환불은 관계법령과 조합 규약·계약서가 정하는 바에 따릅니다." / 최초 모집신고일 확인 후 문구 확정.'},
+  {id:"Q9",cat:"C",catL:"철회·탈퇴·환불",q:"나중에 탈퇴하면요?",
+   a:["임의 탈퇴는 원칙적으로 제한되며, 탈퇴 희망 시 15일 전 서면 통고 후 총회·이사회 의결로 결정됩니다.","해지 사유로 해지되면 부담금 총액의 10%가 위약금으로 공제되고, 환불은 <b>신규 조합원·일반분양자로 대체되어 입금이 완료된 때</b> 이뤄집니다. 즉시 환불이 아닙니다."],
+   refs:"규약 제12조 · 가입계약서 제12조"},
+  {id:"Q10",cat:"C",catL:"철회·탈퇴·환불",q:"허위·과장 안내를 듣고 가입했다면요?",
+   a:["과장·기망이 있었다면 30일·최초신고 시점과 무관하게 <b>민법상 취소로 전액 환불 + 손해배상</b>이 가능합니다.","그래서 상담 시 사실만 안내하는 것이 조합·영업 모두를 보호합니다."]},
+  {id:"Q11",cat:"C",catL:"철회·탈퇴·환불",q:"세대수가 줄면 제 자리는 안전한가요?",
+   a:["인·허가로 세대수가 감소하면 가입순서 <b>역순으로 탈퇴 처리</b>될 수 있고, 조합원은 이를 수용하도록 돼 있습니다.","후순위 가입일수록 명확히 안내하세요."],
+   refs:"가입계약서 제12조5"},
+  {id:"Q12",cat:"D",catL:"동호수·시공",q:"동·호수는 확정되나요?",
+   a:["가입 시 동·호수를 지정하되, 인·허가·사업 진행에 따라 변경될 수 있고 조합원은 이의를 제기하지 않도록 돼 있습니다."],
+   refs:"가입계약서 제14조 · 각서 6",
+   guard:'"확정 동·호수" 단정 금지.'},
+  {id:"Q13",cat:"D",catL:"동호수·시공",q:"미달되면 어떻게 되나요?",
+   a:["자격미달·탈퇴·충원 미달로 미분양이 생기면 일반분양으로 전환될 수 있고 갑·을이 동의하는 구조입니다."],
+   refs:"가입계약서 제11조",
+   guard:'"조합원=100% 확정 입주" 단정 불가.'},
+  {id:"Q14",cat:"D",catL:"동호수·시공",q:"시공사가 바뀔 수도 있나요?",
+   a:["사업 명칭·시공예정사는 변경될 수 있으며, 변경 시 조합원은 이의를 제기하지 않도록 돼 있습니다."],
+   refs:"가입계약서 제18조12",
+   guard:"현재 기준으로만 안내, 미확정 사항 단정 금지."},
+  {id:"Q15",cat:"E",catL:"전매·입주",q:"나중에 프리미엄 붙여 팔 수 있나요?",
+   a:["조합원 지위는 주택법령이 정한 전매금지기간 경과 전에는 타인에게 전매(양도·증여)할 수 없습니다.","규제지역 여부를 묻는 경우에만 사실만: '현재 처인구 역북동은 조정대상지역·투기과열지구에 해당하지 않으나, 규제지역 지정은 변동될 수 있고 조합원 지위 전매는 주택법·규약의 제한을 받습니다.'"],
+   refs:"가입계약서 제50조",
+   guard:"시세차익·프리미엄·전매를 소구로 안내하는 것은 금지."},
+  {id:"Q16",cat:"E",catL:"전매·입주",q:"입주는 언제 하나요?",
+   a:["착공·인·허가에 따라 변동될 수 있어 확정해 드릴 수 없습니다. '확인 후 안내'로 대응하세요."],
+   guard:"특정 입주 연·월 단정 금지."},
+  {id:"Q17",cat:"E",catL:"전매·입주",q:"계약서는 언제 효력이 생기나요?",
+   a:["가입계약서는 갑(조합)과 을(가입자)의 날인이 있어야 효력이 발생하며, 날인이 없으면 무효입니다.","조합 날인 확인 후 계약자에게 교부하세요."],
+   refs:"가입계약서 제18조7"}
+];
+
+const listEl=document.getElementById('list');
+const countEl=document.getElementById('count');
+const emptyEl=document.getElementById('empty');
+const tabooEl=document.getElementById('taboo');
+const pendingEl=document.getElementById('pending');
+let curCat='ALL', curQuery='';
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(){
+  const ql=curQuery.trim().toLowerCase();
+  const rows=DATA.filter(d=>{
+    const catOk = curCat==='ALL' ? true : curCat==='WARN' ? (d.guard||d.confirm) : d.cat===curCat;
+    if(!catOk) return false;
+    if(!ql) return true;
+    const hay=(d.id+' '+d.q+' '+d.a.join(' ')+' '+d.catL+' '+(d.guard||'')+' '+(d.refs||'')).toLowerCase();
+    return hay.includes(ql);
+  });
+
+  listEl.innerHTML = rows.map(d=>{
+    const guard = d.guard ? `<div class="guard"><span class="lead">⚠ 주의 · 금기</span>${d.guard}</div>` : '';
+    const refs = d.refs ? `<div class="refs"><b>근거</b> · ${esc(d.refs)}</div>` : '';
+    const tags = `<span class="tag cat">${d.cat} ${d.catL}</span>`
+      + (d.confirm?`<span class="tag confirm">★ 확인 필요</span>`:'')
+      + (d.guard?`<span class="tag hasguard">⚠ 주의</span>`:'');
+    const ans = d.a.map(p=>`<p>${p}</p>`).join('');
+    return `<div class="card">
+      <button class="q-btn" aria-expanded="false">
+        <span class="q-id">${d.id}</span>
+        <span class="q-text">${esc(d.q)}<span class="q-tags">${tags}</span></span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="body"><div class="answer"><span class="lead">이렇게 안내</span>${ans}</div>${guard}${refs}</div>
+    </div>`;
+  }).join('');
+
+  const has=rows.length>0;
+  emptyEl.classList.toggle('hidden',has);
+  listEl.classList.toggle('hidden',!has);
+  countEl.innerHTML = ql||curCat!=='ALL'
+    ? `<b>${rows.length}</b>건 표시 중 · 전체 ${DATA.length}건`
+    : `전체 <b>${DATA.length}</b>건`;
+
+  // panels only when browsing everything
+  const showPanels = !ql && (curCat==='ALL'||curCat==='WARN');
+  tabooEl.classList.toggle('hidden',!showPanels);
+  pendingEl.classList.toggle('hidden',!(showPanels && curCat!=='WARN' || (curCat==='WARN'&&!ql)));
+
+  bind();
+}
+
+function bind(){
+  document.querySelectorAll('.q-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const card=btn.closest('.card');
+      const open=card.hasAttribute('open');
+      if(open){card.removeAttribute('open');btn.setAttribute('aria-expanded','false');}
+      else{card.setAttribute('open','');btn.setAttribute('aria-expanded','true');}
+    };
+  });
+}
+
+document.getElementById('copyAddr').addEventListener('click',async e=>{
+  const btn=e.currentTarget;
+  const text=document.getElementById('galleryAddr').textContent.trim();
+  try{ await navigator.clipboard.writeText(text); }
+  catch{ const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(_){} ta.remove(); }
+  btn.textContent='복사됨';btn.classList.add('done');
+  setTimeout(()=>{btn.textContent='복사';btn.classList.remove('done');},1500);
+});
+
+document.getElementById('q').addEventListener('input',e=>{curQuery=e.target.value;render();});
+document.getElementById('chips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  curCat=b.dataset.cat;
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
